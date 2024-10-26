@@ -140,8 +140,20 @@ module Rpush
           token = obtain_access_token['access_token']
           post = Net::HTTP::Post.new(@uri.path, 'Content-Type' => 'application/json',
                                      'Authorization' => "Bearer #{token}")
-          post.body = @notification.as_json.to_json
+          Rpush.logger.info("FCM payload data json: #{payload_data(@notification).to_json}")
+          post.body = payload_data(@notification).to_json
           @http.request(@uri, post)
+        end
+
+        # Custom methods to fix error - because of active support
+        def payload_data(noti)
+          json = {
+            'data' => noti.data,
+            'token' => noti.device_token
+          }
+
+          json['notification'] = noti.notification.slice(*['title', 'body', 'image']) if noti.notification
+          { 'message' => json }
         end
 
         def necessary_data_exists?(app)

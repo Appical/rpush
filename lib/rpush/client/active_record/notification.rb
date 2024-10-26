@@ -9,8 +9,8 @@ module Rpush
 
         self.default_column_serializer = YAML if respond_to?(:default_column_serializer)
 
-        serialize :registration_ids
-        serialize :url_args
+        serialize :registration_ids, coder: JSON
+        serialize :url_args, coder: JSON
 
         belongs_to :app, class_name: 'Rpush::Client::ActiveRecord::App'
 
